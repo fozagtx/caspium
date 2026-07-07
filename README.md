@@ -75,7 +75,7 @@ When `NOWNODES_KEY` is set, all RPC traffic routes through NowNodes instead of t
 
 # 2. Call any paid endpoint with the deploy hash as proof:
 curl -H "X-402-Payment: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6" \
-  https://your-app.railway.app/api/v1/query/block/latest
+  https://caspium-production.up.railway.app/api/v1/query/block/latest
 
 # 3. Server calls info_get_deploy on-chain, verifies:
 #    - execution succeeded

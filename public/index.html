@@ -75,7 +75,7 @@ td:first-child{color:#e8eaed;font-family:'JetBrains Mono',monospace;font-size:12
 
 <h2>Example</h2>
 <pre><code>curl -H "X-402-Payment: a1b2c3d4e5f6a7b8c9d0e1f2" \
-  http://localhost:4001/api/v1/query/block/latest</code></pre>
+  https://caspium-production.up.railway.app/api/v1/query/block/latest</code></pre>
 
 <h2>Payment flow</h2>
 <p>Send CSPR to the receiver address configured in <code>.env</code>. Take the deploy hash and pass it as the <code>X-402-Payment</code> header value. The server fetches the deploy via <code>info_get_deploy</code>, checks execution success, confirms the transfer target matches the configured receiver, and returns the data.</p>
