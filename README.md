@@ -41,7 +41,6 @@ npm start
 # .env — secrets only, everything else is in config.ts
 X402_RECEIVER=         # wallet that collects payments
 NOWNODES_KEY=          # optional — NowNodes API key
-ALLIUM_API_KEY=        # optional — Allium API key
 ```
 
 The receiver address is a Casper account public key. All CSPR payments go here.  
