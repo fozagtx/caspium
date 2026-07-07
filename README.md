@@ -1,8 +1,28 @@
 # x402-casper-api
 
-Pay-per-query API for Casper blockchain.  
-Clients pay $0.05 per request via on-chain CSPR transfer.  
-Payment verified on-chain via `info_get_deploy` RPC.
+Pay-per-query for Casper blockchain data.  
+No API keys. No accounts. No subscriptions.  
+One CSPR transfer. One query. $0.05.
+
+```
+X-402-Payment: <deploy-hash>
+```
+
+---
+
+## The problem
+
+Every Casper dApp needs chain data. Running a node is overhead.  
+Public RPCs are rate-limited. Data providers want monthly commitments.  
+
+This is a machine-readable API for machines that pay their own way.
+
+## How it works
+
+1. Send CSPR to the configured receiver address
+2. Take the deploy hash from the transfer
+3. Call any paid endpoint with `X-402-Payment: <deploy-hash>`
+4. Server calls `info_get_deploy`, confirms the transfer, returns the data
 
 ## Quick start
 
@@ -14,44 +34,41 @@ node server.js
 
 ## Endpoints
 
-### Paid — require `X-402-Payment: <deploy-hash>` header
+### Paid
 
-| Path | Params |
-|------|--------|
-| `GET /api/v1/query/block/latest` | — |
-| `GET /api/v1/query/block` | `?height=` |
-| `GET /api/v1/query/balance` | `?key=` (account public key) |
-| `GET /api/v1/query/deploy` | `?hash=` |
-| `GET /api/v1/query/validators` | — |
-| `GET /api/v1/query/network` | — |
-| `GET /api/v1/query/transfers` | `?count=` |
+Require `X-402-Payment: <deploy-hash>` header. Each costs $0.05.
+
+| Method | Path | Params |
+|--------|------|--------|
+| GET | `/api/v1/query/block/latest` | — |
+| GET | `/api/v1/query/block` | `?height=` |
+| GET | `/api/v1/query/balance` | `?key=` |
+| GET | `/api/v1/query/deploy` | `?hash=` |
+| GET | `/api/v1/query/validators` | — |
+| GET | `/api/v1/query/network` | — |
+| GET | `/api/v1/query/transfers` | `?count=` |
 
 ### Free
 
-| Path | Description |
-|------|-------------|
-| `GET /api/v1/health` | Server + chain status |
-| `GET /api/v1/stats` | Payment revenue stats |
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/health` | Server and chain status |
+| GET | `/api/v1/stats` | Payment revenue statistics |
 
-## How it works
-
-1. Send CSPR to the receiver address (configured in `.env`)
-2. Take the deploy hash from the transfer
-3. Call any paid endpoint with header `X-402-Payment: <deploy-hash>`
-4. Server fetches the deploy via `info_get_deploy`, confirms it's a successful transfer to the receiver, and returns the data
+## Example
 
 ```bash
-curl -H "X-402-Payment: <deploy-hash>" \
+curl -H "X-402-Payment: a1b2c3d4e5..." \
   http://localhost:4001/api/v1/query/block/latest
 ```
 
 ## Files
 
 ```
-config.js              port, rpc url, receiver, network name
-.env.example           template for config overrides
-server.js              route definitions
-middleware/x402.js      on-chain payment verification
-services/casper.js     casper testnet rpc client
-services/payments.js   sqlite payment log
+config.js           port, rpc url, receiver, network
+server.js           routes
+middleware/x402.js  deploy verification (on-chain)
+services/casper.js  casper rpc client
+services/payments.js sqlite ledger
+public/index.html   landing page
 ```

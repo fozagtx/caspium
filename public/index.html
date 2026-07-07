@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>x402-casper-api</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,system-ui,sans-serif;background:#0a0b0f;color:#e8eaed;line-height:1.6;padding:40px 24px}
+.wrap{max-width:800px;margin:0 auto}
+h1{font-size:28px;font-weight:700;margin-bottom:4px}
+h2{font-size:18px;font-weight:600;margin-top:40px;margin-bottom:12px;color:#a29bfe}
+p{color:#9aa0b0;margin-bottom:16px}
+code,.code{font-family:'JetBrains Mono',monospace;font-size:13px;background:#12141a;padding:2px 6px;border-radius:4px;color:#a29bfe}
+pre{background:#12141a;border-radius:8px;padding:16px;overflow-x:auto;margin:12px 0;border:1px solid #2a2e3f}
+pre code{background:none;padding:0;font-size:12px;color:#e8eaed;line-height:1.7}
+table{width:100%;border-collapse:collapse;margin:12px 0 16px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid #2a2e3f;font-size:14px}
+th{color:#5c6172;font-weight:600;text-transform:uppercase;font-size:11px;letter-spacing:.5px}
+td{color:#9aa0b0}
+td:first-child{color:#e8eaed;font-family:'JetBrains Mono',monospace;font-size:12px}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.badge-green{background:rgba(0,184,148,.15);color:#00b894}
+.badge-purple{background:rgba(108,92,231,.2);color:#a29bfe}
+.badge-grey{background:rgba(90,97,114,.2);color:#5c6172}
+.flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:16px 0;padding:16px;background:#12141a;border-radius:8px;border:1px solid #2a2e3f}
+.flow-step{padding:6px 14px;border-radius:6px;font-size:13px;font-weight:500}
+.flow-step.s1{background:rgba(108,92,231,.2);color:#a29bfe}
+.flow-step.s2{background:rgba(0,184,148,.15);color:#00b894}
+.flow-step.s3{background:rgba(253,203,110,.15);color:#fdcb6e}
+.flow-arrow{color:#5c6172;font-size:18px}
+.footer{margin-top:60px;padding-top:20px;border-top:1px solid #2a2e3f;font-size:13px;color:#5c6172}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>x402-casper-api</h1>
+<p style="font-size:15px;color:#5c6172">Pay-per-query for Casper blockchain data. No API keys. No accounts. No subscriptions.</p>
+
+<p style="margin-top:24px;padding:12px 16px;background:rgba(0,184,148,.08);border-radius:8px;border:1px solid rgba(0,184,148,.2);color:#00b894;font-size:14px">
+  Send CSPR → get data. One transfer. One query. <strong>$0.05</strong>.
+</p>
+
+<h2>How it works</h2>
+<div class="flow">
+  <span class="flow-step s1">1. Send CSPR</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step s2">2. Get deploy hash</span>
+  <span class="flow-arrow">→</span>
+  <span class="flow-step s3">3. Query with X-402-Payment header</span>
+</div>
+<p>Server calls <code>info_get_deploy</code> on-chain to verify the transfer reached the receiver. If valid, data is returned. No mock verification. No string parsing. Real RPC.</p>
+
+<h2>Paid endpoints</h2>
+<p>Each requires <code>X-402-Payment: &lt;deploy-hash&gt;</code>. Each costs $0.05.</p>
+<table>
+<tr><th>Path</th><th>Params</th><th></th></tr>
+<tr><td>GET /api/v1/query/block/latest</td><td>—</td><td><span class="badge badge-green">paid</span></td></tr>
+<tr><td>GET /api/v1/query/block</td><td>?height=</td><td><span class="badge badge-green">paid</span></td></tr>
+<tr><td>GET /api/v1/query/balance</td><td>?key=</td><td><span class="badge badge-green">paid</span></td></tr>
+<tr><td>GET /api/v1/query/deploy</td><td>?hash=</td><td><span class="badge badge-green">paid</span></td></tr>
+<tr><td>GET /api/v1/query/validators</td><td>—</td><td><span class="badge badge-green">paid</span></td></tr>
+<tr><td>GET /api/v1/query/network</td><td>—</td><td><span class="badge badge-green">paid</span></td></tr>
+<tr><td>GET /api/v1/query/transfers</td><td>?count=</td><td><span class="badge badge-green">paid</span></td></tr>
+</table>
+
+<h2>Free endpoints</h2>
+<table>
+<tr><th>Path</th><th>Description</th><th></th></tr>
+<tr><td>GET /api/v1/health</td><td>Server and chain status</td><td><span class="badge badge-purple">free</span></td></tr>
+<tr><td>GET /api/v1/stats</td><td>Payment revenue statistics</td><td><span class="badge badge-purple">free</span></td></tr>
+</table>
+
+<h2>Example</h2>
+<pre><code>curl -H "X-402-Payment: a1b2c3d4e5f6a7b8c9d0e1f2" \
+  http://localhost:4001/api/v1/query/block/latest</code></pre>
+
+<h2>Payment flow</h2>
+<p>Send CSPR to the receiver address configured in <code>.env</code>. Take the deploy hash and pass it as the <code>X-402-Payment</code> header value. The server fetches the deploy via <code>info_get_deploy</code>, checks execution success, confirms the transfer target matches the configured receiver, and returns the data.</p>
+
+<div class="footer">
+  <p>x402-casper-api &mdash; <span class="badge badge-grey">x402 protocol</span> <span class="badge badge-grey">casper testnet</span> <span class="badge badge-grey">$0.05/query</span></p>
+</div>
+</div>
+</body>
+</html>

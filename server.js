@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const cfg = require('./config');
 const x402 = require('./middleware/x402');
 const { logPayment, getStats } = require('./services/payments');
@@ -87,6 +88,11 @@ app.get('/api/v1/health', async (req, res) => {
   } catch {
     res.status(503).json({ status: 'degraded' });
   }
+});
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+  if (!req.path.startsWith('/api')) res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(cfg.port, '0.0.0.0', () => {
