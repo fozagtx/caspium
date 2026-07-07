@@ -21,10 +21,12 @@ interface RpcResult {
 
 const verified = new Set<string>();
 
+const RPC_URL = cfg.nownodesKey ? { url: cfg.nownodesUrl, headers: { 'api-key': cfg.nownodesKey } as Record<string, string> } : { url: cfg.rpcUrl, headers: {} as Record<string, string> };
+
 async function rpc(method: string, params: unknown[] = []): Promise<RpcResult> {
-  const res = await fetch(cfg.rpcUrl, {
+  const res = await fetch(RPC_URL.url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...RPC_URL.headers },
     body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method, params: params.length || undefined }),
   });
   if (!res.ok) throw new Error('RPC ' + res.status);

@@ -1,5 +1,7 @@
 import cfg from '../config';
 
+const RPC_URL = cfg.nownodesKey ? { url: cfg.nownodesUrl, headers: { 'api-key': cfg.nownodesKey } } : { url: cfg.rpcUrl, headers: {} as Record<string, string> };
+
 interface RpcBlock {
   block: {
     hash: string;
@@ -60,9 +62,9 @@ interface TransferEntry {
 }
 
 async function rpc<T>(method: string, params: unknown[] = []): Promise<T> {
-  const res = await fetch(cfg.rpcUrl, {
+  const res = await fetch(RPC_URL.url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...RPC_URL.headers },
     body: JSON.stringify({ jsonrpc: '2.0', id: Date.now(), method, params: params.length ? params : undefined }),
   });
   if (!res.ok) throw new Error('Casper RPC ' + res.status + ': ' + res.statusText);
