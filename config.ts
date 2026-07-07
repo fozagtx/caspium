@@ -8,7 +8,7 @@ export interface Config {
 }
 
 const cfg: Config = {
-  port: 4001,
+  port: parseInt(process.env.PORT || '4001', 10),
   rpcUrl: 'https://rpc.testnet.casper.network/rpc',
   nownodesUrl: 'https://casper.nownodes.io',
   nownodesKey: process.env.NOWNODES_KEY,
