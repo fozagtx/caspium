@@ -3,7 +3,8 @@ import path from 'path';
 import fs from 'fs';
 import { v4 as uuid } from 'uuid';
 
-const DB_PATH = path.join(__dirname, '..', 'data', 'payments.db');
+const ROOT = __dirname.endsWith('dist') ? path.resolve(__dirname, '..', '..') : path.resolve(__dirname, '..');
+const DB_PATH = path.join(ROOT, 'data', 'payments.db');
 
 interface PaymentRow {
   id: string;

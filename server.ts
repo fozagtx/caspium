@@ -8,6 +8,9 @@ import * as casper from './services/casper';
 
 const app = express();
 
+const ROOT = __dirname.endsWith('dist') ? path.resolve(__dirname, '..') : __dirname;
+const publicDir = path.join(ROOT, 'public');
+
 app.use(cors());
 app.use(express.json());
 
@@ -92,7 +95,6 @@ app.get('/api/v1/health', async (_req, res) => {
 
 // ─── Landing page ──────────────────────────────────────────────────
 
-const publicDir = path.join(__dirname, '..', 'public');
 app.use(express.static(publicDir));
 app.get('*', (req, res) => {
   if (!req.path.startsWith('/api')) res.sendFile(path.join(publicDir, 'index.html'));
